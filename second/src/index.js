@@ -1,0 +1,31 @@
+/** fetching environment */
+import './utils/env';
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {BrowserRouter as Router} from 'react-router-dom';
+import createHistory from 'history/createBrowserHistory';
+/**registering Service worker for resource caching */
+import registerServiceWorker from './registerServiceWorker';
+
+/** App Root */
+import AppRoot from './containers/appRoot';
+
+/** Store */
+import appStore from './store/appStore';
+
+/**GLOBAL CSS FILES */
+import './assets/css/style.css';
+
+
+const history = createHistory();
+const store = appStore(history);
+
+ReactDOM.render(
+    <Router>
+        <AppRoot store={store} history={history} />        
+    </Router>,
+    document.getElementById('root')
+);
+
+registerServiceWorker();
