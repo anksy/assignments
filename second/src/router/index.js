@@ -19,6 +19,7 @@ class AppRouter extends React.Component {
                             <Route exact path="/" component={Users} />
                             <Route exact path="/users/" component={Users} />
                             <Route exact path="/users/add" component={AddUser} />
+                            <Route exact path="/users/add/:id" component={AddUser} />
                         </Switch>
                     <Footer />
                 </div>

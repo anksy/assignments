@@ -31,23 +31,16 @@ class AppRouter {
         });
     }
 
-    unlessRoutes() {
-        this.router.use(expressJWT({
-            secret: new Buffer(env.secret).toString('base64'),
-        }).unless({
-            path: [
-                this.api_path + 'users'
-            ]
-        }));
-    }
-
     loadAppRoutes() {
-        this.router.get('/users', this.call['frontend']['UserController'].get);
+        this.router.get('/users', this.call['frontend']['UserController'].list);
+        this.router.delete('/users/delete/:id', this.call['frontend']['UserController'].delete);
+        this.router.post('/users/add', this.call['frontend']['UserController'].add);
+        this.router.get('/users/get/:id', this.call['frontend']['UserController'].get);
+        this.router.put('/users/edit/:id', this.call['frontend']['UserController'].edit);
     }
 
     init() {
         this.loadAppClasses();
-        // this.unlessRoutes();
         this.loadAppRoutes();
 
         return this.router;
