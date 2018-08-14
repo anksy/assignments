@@ -5,14 +5,18 @@ import React from 'react'
 import { Provider } from 'react-redux'
 /** Importing routes */
 import AppRoutes from '../router';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const Root = ({ store, history}) => (
-    <Provider store={store}>
-        <div>
-            <AppRoutes history={history}/>
-            {/* <DevTools /> */}
-        </div>
-    </Provider>
+    <React.Fragment>
+        <CssBaseline />
+        <Provider store={store}>
+            <div className="main-content">
+                <AppRoutes history={history}/>
+                {/* <DevTools /> */}
+            </div>
+        </Provider>
+    </React.Fragment>
 );
 
 export default Root;

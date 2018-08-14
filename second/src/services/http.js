@@ -54,8 +54,8 @@ export default class HTTP {
 			  url:url,
 			  [method==='get'?"params":"data"] : data
 			})
-				.then(response => resolve(response))
-				.catch(error => reject(error));
+			.then(response => resolve(response))
+			.catch(error => reject(error));
 		});
 	}
 }
