@@ -1,9 +1,9 @@
 import http from '../services/http';
-import { getSettings } from "../utils/endpoints";
+import { usersData } from "../utils/endpoints";
 
-export function getSettingsCall(data) {
+export function getUsersData(data) {
     return new Promise((resolve, reject) => {
-        http.Request("get", getSettings, data.data)
+        http.Request("get", usersData, data.data)
         .then(response => resolve(response) )
         .catch(error => reject(error) );
     });

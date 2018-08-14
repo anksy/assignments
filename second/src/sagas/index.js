@@ -1,8 +1,8 @@
 import {takeLatest} from 'redux-saga/effects'
-import { getSettings } from './site';
+import { getData } from './users';
 
 export default function* Sagas(){
 
-	/*Admin User Actions*/
-	yield takeLatest("get-settings", getSettings);
+	/*User Actions*/
+	yield takeLatest("getUsersData", getData);
 }
