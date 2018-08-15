@@ -19,8 +19,12 @@ module.exports = class UserController {
 	 */
     list(req, res) {
         this.__readData(__data_source)
-            .then(lists => res.json({ type: "success", data: this.__formatter(lists)}))
-            .catch(err => res.status(412).json({type:"error", message:"No Data Found"}));
+            .then(lists => {
+            
+                
+                res.json({ type: "success", data: this.__formatter(lists) });
+            })
+            .catch(err => res.status(412).json({type:"error", data:[], message:"No Data Found"}));
     }
 
     /**
@@ -58,7 +62,7 @@ module.exports = class UserController {
                 rows.splice(+id-1, 1);
                 let SplicedData = rows.join('\n');
                 fs.writeFileSync(__data_source, SplicedData);
-                res.json({ type: "success", message: "Row has been removed." });
+                res.json({ type: "success", message: "User has been removed." });
             }else{
                 res.status(412).json({ type: "error", message: "This is not a valid ID." });
             }
@@ -118,8 +122,13 @@ module.exports = class UserController {
     __readData(file){
         return new Promise((resolve, reject) => {
             fs.readFile(file, 'utf-8', (err, lists) => {
-                if (lists) resolve(lists.split("\n"));
-                if (err) reject(err);
+                
+                if (lists) {
+                    resolve(lists.split("\n"))
+                }else{
+                    reject(err);
+                }
+
             });
         });
     }

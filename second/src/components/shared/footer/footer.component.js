@@ -6,10 +6,10 @@ export default class Footer extends Component {
         return (
             <footer>
                 <Typography variant="title" align="center" gutterBottom>
-                    Footer Here...
+                    React App
                     </Typography>
                 <Typography variant="subheading" align="center" color="textSecondary" component="p">
-                    A Sample CRUD App!!!
+                    Designed & Developed By Bhupendra Singh
                     </Typography>
             </footer>
         );

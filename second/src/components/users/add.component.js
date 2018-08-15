@@ -8,18 +8,25 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import styles from "../../ui/mui";
 import TextField from '@material-ui/core/TextField';
+import InfoSnackbar from "../shared/snackbar/info.snackbar";
+import { required, email, maxLength8, github, twitter } from "../shared/validations/form.validation";
 
 const renderTextField = ({
     input,
     label,
-    meta: { touched, error },
+    meta: { touched, error, warning },
     ...custom
 }) => (
+        <div>
         <TextField
             fullWidth
             {...input}
             {...custom}
         />
+        {touched &&
+        ((error && <span className="error">{error}</span>) ||
+                (warning && <span className="warning">{warning}</span>))}
+        </div>
     )
 
 class AddUser extends Component{
@@ -27,10 +34,17 @@ class AddUser extends Component{
     constructor(props){
         super(props);
 
+        this.state = {
+            snackopen: false,
+            snackmessage: null
+        }
+
         /**
          * binding this
          */
         this.submit = this.submit.bind(this);
+        this.closeSnack = this.closeSnack.bind(this);
+        
     }
 
     componentDidMount(){
@@ -50,6 +64,7 @@ class AddUser extends Component{
     render(){
 
         const { classes, handleSubmit, pristine, reset, submitting } = this.props;
+        const { snackmessage, snackopen } =  this.state;
 
         return(
             <div className={classes.unit}>
@@ -64,6 +79,7 @@ class AddUser extends Component{
                                         component={renderTextField}
                                         type="text"
                                         placeholder=" Name"
+                                        validate={[required]}
                                         label="Name"
                                     />
                                 </Grid>
@@ -72,6 +88,7 @@ class AddUser extends Component{
                                         name="email"
                                         component={renderTextField}
                                         type="email"
+                                        validate={[required, email]}
                                         placeholder="Email"
                                         label="email"
                                     />
@@ -82,6 +99,7 @@ class AddUser extends Component{
                                         name="dob"
                                         component={renderTextField}
                                         type="date"
+                                        validate={[required]}
                                         placeholder="Date of Birth"
                                         label="dob"
                                     />
@@ -93,6 +111,7 @@ class AddUser extends Component{
                                         name="github"
                                         component={renderTextField}
                                         type="url"
+                                        validate={[required, github]}
                                         placeholder="Github Profile"
                                         label="github"
                                     />
@@ -103,6 +122,7 @@ class AddUser extends Component{
                                         name="twitter"
                                         component={renderTextField}
                                         type="url"
+                                        validate={[required, twitter]}
                                         placeholder="Twitter Profile"
                                         label="twitter"
                                     />
@@ -114,6 +134,7 @@ class AddUser extends Component{
                                         name="city"
                                         component={renderTextField}
                                         type="text"
+                                        validate={[required]}
                                         placeholder="City"
                                         label="city"
                                     />
@@ -123,6 +144,7 @@ class AddUser extends Component{
                                         name="postal"
                                         component={renderTextField}
                                         type="text"
+                                        validate={[required, maxLength8]}
                                         placeholder="Postal Code"
                                         label="postal"
                                     />
@@ -142,21 +164,25 @@ class AddUser extends Component{
                         </form>
                     </div>
                 </div>
+                <InfoSnackbar snackopen={snackopen} message={snackmessage} snackclose={this.closeSnack} />
             </div>
         );
     }
 
     submit(values){
-        const {dispatch} = this.props; 
+        const { dispatch, reset} = this.props; 
         dispatch({
             type : "addUser",
             data: values,
             success : added => {
-                dispatch(push("/users"));
+                this.setState({ snackopen: true, snackmessage: added.message });
+                if (!values.id) reset();
             },
             error : () => {}
         });
     }
+
+    closeSnack() { this.setState({ snackopen: false }); }  
 }
 
 

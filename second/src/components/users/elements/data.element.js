@@ -2,19 +2,26 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
+
+import Grid from '@material-ui/core/Grid';
+
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Icon from '@material-ui/core/Icon';
 import classNames from 'classnames';
+
+
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-/**importing dialog */
-
+/**importing dialog & others */
 import ConfirmDialog from "../../shared/dialog/confirm.dialog";
+import InfoSnackbar from "../../shared/snackbar/info.snackbar";
 
 class Data extends Component{
 
@@ -23,9 +30,11 @@ class Data extends Component{
 
         this.state = {
             open : false,
+            snackopen : false,
+            snackmessage: null,
             loader : true,
             users : [],
-            delete : null
+            user_delete : null
         }
 
         /** binding this */
@@ -34,10 +43,11 @@ class Data extends Component{
         this.deleteRow = this.deleteRow.bind(this);
         this.renderRows = this.renderRows.bind(this);
         this.confirmDelete = this.confirmDelete.bind(this);
+        this.closeSnack = this.closeSnack.bind(this);
     }
 
     componentDidMount(){
-        this.getData();
+        this.getData(); 
     }
 
     getData(){
@@ -45,38 +55,45 @@ class Data extends Component{
         dispatch({
             type: "getUsersData",
             success: users => this.setState({ users: users.data, loader: false }),
-            error: () => { }
+            error: err => this.setState({ users: [], loader: false })
         });
     }
 
     render(){
         const { classes } = this.props;
-        const { loading, users, open } = this.state;
-
+        const { loading, users, open, snackmessage, snackopen } = this.state;
+        
+        
         return(
+            
+
             <div className={classNames(classes.layout, classes.cardGrid)}>
                 {/* End hero unit */}
                 <Paper className={classes.root}>
                     <Table className={classes.table}>
-                        <TableHead>
+                        <TableHead className="table-head">
                             <TableRow>
                                 <TableCell>Name</TableCell>
                                 <TableCell>Date of Birth</TableCell>
                                 <TableCell>Email</TableCell>
-                                <TableCell>Git Hub</TableCell>
-                                <TableCell>Twitter</TableCell>
-                                <TableCell>City</TableCell>
-                                <TableCell>Pincode</TableCell>
+                                <TableCell>GitHub / Twitter</TableCell>
+                                
+                                <TableCell>City / Pincode</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {users && this.renderRows(users)}
-                            {loading && <h4>Loading...</h4>}
+                            {!users.length && 
+                                <TableRow>
+                                    <TableCell colSpan="8"> We've reached to end of file but coundn't find any user. </TableCell>
+                                </TableRow>
+                            }
                         </TableBody>
                     </Table>
 
                     <ConfirmDialog open={open} close={this.closeDailog} confirm={this.confirmDelete}/>
+                    <InfoSnackbar snackopen={snackopen} message={snackmessage} snackclose={this.closeSnack}/>
                 </Paper>
             </div>
         );
@@ -88,46 +105,65 @@ class Data extends Component{
                 <TableCell component="th" scope="row"> {row.name} </TableCell>
                 <TableCell>{row.dob}</TableCell>
                 <TableCell>{row.email}</TableCell>
-                <TableCell>{row.github}</TableCell>
-                <TableCell>{row.twitter}</TableCell>
-                <TableCell>{row.city}</TableCell>
-                <TableCell>{row.postal}</TableCell>
-                <TableCell>
-                    <Link to={"/users/add/"+row.id}>
+                <TableCell>{row.github} <div> {row.twitter} </div></TableCell>
+                <TableCell>{row.city} <div> {row.postal} </div></TableCell>
+                <TableCell className="min-width">
+                    {/* <Link to={"/users/add/"+row.id}>
                         <Button size='small' mini color="primary" aria-label="Edit">
                             <Icon>edit_icon</Icon>
                         </Button>
                     </Link>
-                    <Button size='small' mini color="primary" aria-label="Edit" onClick={this.deleteRow}  data-id={row.id}>
-                        <Icon data-id={row.id} style={{ pointerEvents: 'none' }}>delete_icon</Icon>
-                    </Button>
+                    <Button size='small' mini color="primary" aria-label="Edit" onClick={this.deleteRow}>
+                        <Icon data-id={row.id}>delete_icon</Icon>
+                    </Button> */}
+
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                    >
+                        <Link to={"/users/add/" + row.id}><IconButton color="primary" aria-label="Edit User">
+                            <Icon>edit_icon</Icon>
+                        </IconButton></Link>
+
+                        <IconButton color="secondary" aria-label="Delete User" onClick={this.deleteRow}>
+                            <Icon data-id={row.id}>delete_icon</Icon>
+                        </IconButton>
+
+                    </Grid>
+                    
+
                 </TableCell>
             </TableRow>
         );
     }
 
     closeDailog() { this.setState({ open: false }); }    
+    closeSnack() { this.setState({ snackopen: false }); }  
+
     deleteRow($event) { 
-        console.log($event.target);
-        console.log($event.target.dataset);
-        
-        this.setState({ open: true });
+        let { id } = $event.target.dataset;
+        this.setState({ open: true, user_delete: id });
     }
 
     confirmDelete() {
         const {dispatch} = this.props;
+        if (!this.state.user_delete) return false;
         /** set loader */
         this.setState({ loader: true });
         dispatch({
             type: "deleteUser",
-            data : { id : 7 },
+            data : { id : this.state.user_delete },
             success: removed => {
+
+                console.log(removed);
+                
                 /** refresh list */
                 this.getData();
-                /** close popup */
-                this.closeDailog();
+                this.setState({ loader: false, user_delete: null, open: false, snackopen: true, snackmessage: removed.message });
             },
-            error: () => { }
+            error: () => this.closeDailog()
         });
     }
 

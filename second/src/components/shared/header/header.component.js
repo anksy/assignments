@@ -39,8 +39,8 @@ class Header extends Component{
                         CRUDapp
                     </Typography>
 
-                    <Link to='/users'><Button color="inherit">List Users</Button></Link>
-                    <Link to='/users/add'><Button color="inherit">Add User</Button></Link>
+                    <Link to='/users' className="whiter"><Button color="inherit">List Users</Button></Link>
+                    <Link to='/users/add' className="whiter"><Button color="inherit">Add User</Button></Link>
                 </Toolbar>
             </AppBar>
         );

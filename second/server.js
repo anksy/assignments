@@ -58,13 +58,14 @@ class Server {
     setAPIRoutes() {
         /*routing /&admin apis*/
         this.app.use('/api', this.routes);
-        //this.app.use('/admin_api', this.routes);
     }
 
     allowToServe() {
+        /** serve static path */
+        this.app.use(express.static(__dirname + '/build'));	
         /*rendering file on routes*/
         this.app.get(/^((?!\/(api)).)*$/, (req, res) => {
-            res.sendFile(path.resolve('./public/index.html'));
+            res.sendFile(path.resolve('./build/index.html'));
         });
     }
 
